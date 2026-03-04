@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>ক্রিকেট স্কোরবোর্ড - ২ ইনিংস</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="scoreboard" id="scoreboard">
+        <h1>🏏 MOHISHMARA FC</h1>
+        <div class="match-info">২ ইনিংস ক্রিকেট</div>
+        
+        <div class="innings-toggle">
+            <button class="innings-btn active" id="innings1Btn" onclick="switchInnings(1)">১ম ইনিংস</button>
+            <button class="innings-btn" id="innings2Btn" onclick="switchInnings(2)">২য় ইনিংস</button>
+        </div>
+        
+        <div class="both-innings-score">
+            <div class="innings-score-box">
+                <div class="label">১ম ইনিংস</div>
+                <div class="value" id="firstInningsScore">০/০</div>
+            </div>
+            <div class="innings-score-box">
+                <div class="label">২য় ইনিংস</div>
+                <div class="value" id="secondInningsScore">০/০</div>
+            </div>
+        </div>
+        
+        <div class="team-section">
+            <div class="team-name" id="currentTeamName">১ম ইনিংস</div>
+            <div class="score" id="bdScore">0/0</div>
+            <div class="overs" id="bdOvers">০.০ ওভার</div>
+        </div>
+        
+        <div class="ball-status" id="ballCount">
+            বল: ০/৬ | বাকি: ১২ ওভার
+        </div>
+        
+        <div class="player-stats">
+            <div class="stats-box" id="strikerBox" onclick="setActive('striker')">
+                <h4>🎯 স্ট্রাইকার</h4>
+                <div class="number" id="strikerName">-</div>
+                <div id="strikerStats">০ (০)</div>
+            </div>
+            <div class="stats-box" id="nonStrikerBox" onclick="setActive('nonStriker')">
+                <h4>🤝 নন-স্ট্রাইকার</h4>
+                <div class="number" id="nonStrikerName">-</div>
+                <div id="nonStrikerStats">০ (০)</div>
+            </div>
+            <div class="stats-box" id="bowlerBox" onclick="setActive('bowler')">
+                <h4>🎪 বোলার</h4>
+                <div class="number" id="bowlerName">-</div>
+                <div id="bowlerStats">০-০ (০)</div>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button class="add-run" onclick="addRun(1)">১</button>
+            <button class="add-run" onclick="addRun(2)">২</button>
+            <button class="add-run" onclick="addRun(3)">৩</button>
+            <button class="add-run" onclick="addRun(4)">৪</button>
+            <button class="add-run" onclick="addRun(6)">৬</button>
+            <button class="special" onclick="addDotBall()">ডট বল</button>
+            <button class="wicket" onclick="addWicket()">উইকেট</button>
+            <button class="special" onclick="addWide()">ওয়াইড</button>
+            <button class="special" onclick="addNoBall()">নো বল</button>
+            <button class="reset" onclick="resetOver()">ওভার শেষ</button>
+            <button class="next-innings" onclick="startNextInnings()">পরবর্তী</button>
+            <button class="reset" onclick="resetMatch()">নতুন</button>
+        </div>
+        
+        <div class="players-section">
+            <div class="players-header" onclick="togglePlayers()">
+                <h3>👥 প্লেয়ার লিস্ট</h3>
+                <span class="arrow" id="playerArrow">▼</span>
+            </div>
+            
+            <div class="players-content" id="playersContent">
+                <div class="player-input">
+                    <input type="text" id="playerName" placeholder="নাম">
+                    <select id="playerType">
+                        <option value="batsman">ব্যাটসম্যান</option>
+                        <option value="bowler">বোলার</option>
+                        <option value="allrounder">অলরাউন্ডার</option>
+                    </select>
+                    <button onclick="addPlayer()">যোগ করুন</button>
+                </div>
+                
+                <h4 class="section-title">🏏 ব্যাটসম্যান</h4>
+                <div class="table-container">
+                    <table class="players-table" id="batsmenTable">
+                        <thead>
+                            <tr>
+                                <th>নাম</th>
+                                <th>রান</th>
+                                <th>বল</th>
+                                <th>৪</th>
+                                <th>৬</th>
+                                <th>SR</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="batsmenBody">
+                            <tr><td colspan="7">কোন ব্যাটসম্যান নেই</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h4 class="section-title">🎯 বোলার</h4>
+                <div class="table-container">
+                    <table class="players-table" id="bowlersTable">
+                        <thead>
+                            <tr>
+                                <th>নাম</th>
+                                <th>ওভার</th>
+                                <th>রান</th>
+                                <th>উই</th>
+                                <th>মে</th>
+                                <th>Eco</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="bowlersBody">
+                            <tr><td colspan="7">কোন বোলার নেই</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <strong>📝 ব্যবহার:</strong> প্লেয়ার যোগ করুন → স্ট্রাইকার/বোলার সিলেক্ট করুন → রান বাটন চাপুন
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

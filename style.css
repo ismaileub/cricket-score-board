@@ -1,0 +1,409 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    margin: 0;
+    padding: 10px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.scoreboard {
+    background: white;
+    padding: 15px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    max-width: 450px;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 5px;
+    font-size: 22px;
+}
+
+.match-info {
+    text-align: center;
+    color: #e74c3c;
+    font-size: 16px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.innings-toggle {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.innings-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    background: #95a5a6;
+    color: white;
+    transition: all 0.3s;
+    font-weight: bold;
+    flex: 1;
+    max-width: 140px;
+}
+
+.innings-btn.active {
+    background: #27ae60;
+    transform: scale(1.02);
+    box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+}
+
+.innings-btn:first-child.active {
+    background: #3498db;
+}
+
+.both-innings-score {
+    display: flex;
+    justify-content: space-around;
+    margin: 8px 0;
+    padding: 8px;
+    background: #2c3e50;
+    border-radius: 12px;
+    color: white;
+}
+
+.innings-score-box {
+    text-align: center;
+    flex: 1;
+}
+
+.innings-score-box .label {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.innings-score-box .value {
+    font-size: 20px;
+    font-weight: bold;
+    color: #f1c40f;
+}
+
+.team-section {
+    margin-bottom: 15px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 15px;
+}
+
+.team-name {
+    font-size: 18px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.score {
+    font-size: 42px;
+    font-weight: bold;
+    color: #27ae60;
+    text-align: center;
+    margin: 5px 0;
+    line-height: 1.2;
+}
+
+.overs {
+    font-size: 16px;
+    color: #7f8c8d;
+    text-align: center;
+}
+
+.ball-status {
+    text-align: center;
+    margin: 12px 0;
+    font-size: 18px;
+    color: #f39c12;
+    font-weight: bold;
+    background: #fff3e0;
+    padding: 8px;
+    border-radius: 25px;
+}
+
+.player-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+    margin: 12px 0;
+}
+
+.stats-box {
+    text-align: center;
+    padding: 8px 3px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.2s;
+    border: 2px solid transparent;
+}
+
+.stats-box:active {
+    transform: scale(0.98);
+    border-color: #27ae60;
+}
+
+.stats-box h4 {
+    margin: 3px 0;
+    color: #2c3e50;
+    font-size: 12px;
+}
+
+.stats-box .number {
+    font-size: 16px;
+    font-weight: bold;
+    color: #27ae60;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.button-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin: 15px 0;
+}
+
+.button-group button {
+    padding: 14px 5px;
+    font-size: 15px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: bold;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+}
+
+.add-run {
+    background: #3498db;
+    color: white;
+}
+
+.wicket {
+    background: #e74c3c;
+    color: white;
+}
+
+.special {
+    background: #f39c12;
+    color: white;
+}
+
+.next-innings {
+    background: #9b59b6;
+    color: white;
+}
+
+.reset {
+    background: #95a5a6;
+    color: white;
+}
+
+.players-section {
+    margin: 12px 0;
+    padding: 10px;
+    background: #fff;
+    border-radius: 15px;
+    border: 1px solid #ddd;
+}
+
+.players-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: #f1f8ff;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.players-header h3 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 16px;
+}
+
+.players-content {
+    display: none;
+}
+
+.players-content.show {
+    display: block;
+}
+
+.player-input {
+    display: flex;
+    gap: 6px;
+    margin: 12px 0;
+    flex-wrap: wrap;
+}
+
+.player-input input,
+.player-input select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.player-input input {
+    flex: 2;
+    min-width: 140px;
+}
+
+.player-input select {
+    flex: 1;
+    min-width: 100px;
+}
+
+.player-input button {
+    padding: 10px 15px;
+    background: #27ae60;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.table-container {
+    overflow-x: auto;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: 1px solid #eee;
+}
+
+.players-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 500px;
+    font-size: 13px;
+}
+
+.players-table th {
+    background: #2c3e50;
+    color: white;
+    padding: 8px 5px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.players-table td {
+    padding: 8px 5px;
+    border-bottom: 1px solid #ddd;
+    white-space: nowrap;
+}
+
+.delete-player {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 5px 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.active-batsman {
+    background: #d4edda !important;
+    font-weight: bold;
+}
+
+.active-bowler {
+    background: #fff3cd !important;
+    font-weight: bold;
+}
+
+.arrow {
+    font-size: 18px;
+    transition: transform 0.3s;
+}
+
+.arrow.rotate {
+    transform: rotate(180deg);
+}
+
+.animation-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    z-index: 10;
+    animation: zoomPop 0.5s ease-out forwards;
+}
+
+.animation-text {
+    font-size: 70px;
+    font-weight: 900;
+    color: rgba(255, 215, 0, 0.9);
+    text-shadow: 0 0 20px orange, 0 0 40px red;
+    transform: scale(0);
+    animation: textPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes textPop {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0;
+    }
+}
+
+@keyframes zoomPop {
+    0% {
+        background: rgba(255, 255, 255, 0);
+    }
+    30% {
+        background: rgba(255, 255, 0, 0.2);
+    }
+    100% {
+        background: rgba(255, 255, 255, 0);
+    }
+}
+
+.section-title {
+    font-size: 14px;
+    margin: 8px 0;
+}
+
+.instructions {
+    margin-top: 10px;
+    padding: 8px;
+    background: #e8f4f8;
+    border-radius: 10px;
+    font-size: 12px;
+}

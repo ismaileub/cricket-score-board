@@ -12,7 +12,7 @@
         <div class="match-info">২ ইনিংস ক্রিকেট</div>
 
         <div class="player-input" id="oversSetup">
-            <input type="number" id="totalOversInput" placeholder="মোট ওভার (এই ইনিংস)" min="1" step="1">
+            <input type="number" id="totalOversInput" placeholder="মোট ওভার (ম্যাচ)" min="1" step="1">
             <button id="setOversBtn" onclick="setTotalOvers()">ওভার সেট</button>
         </div>
         
@@ -41,22 +41,50 @@
         </div>
         
         <div class="ball-status" id="ballCount">
-            বল: ০/৬ | বাকি: ১২ ওভার
+            বল: ০/৬ | মোট ওভার সেট করুন
         </div>
         
         <div class="player-stats">
             <div class="stats-box" id="strikerBox" onclick="setActive('striker')">
-                <h4>🎯 স্ট্রাইকার</h4>
+                <h4>
+                    <span class="stat-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="8"></circle>
+                            <line x1="12" y1="2" x2="12" y2="6"></line>
+                            <line x1="12" y1="18" x2="12" y2="22"></line>
+                            <line x1="2" y1="12" x2="6" y2="12"></line>
+                            <line x1="18" y1="12" x2="22" y2="12"></line>
+                        </svg>
+                    </span>
+                    স্ট্রাইকার
+                </h4>
                 <div class="number" id="strikerName">-</div>
                 <div id="strikerStats">০ (০)</div>
             </div>
             <div class="stats-box" id="nonStrikerBox" onclick="setActive('nonStriker')">
-                <h4>🤝 নন-স্ট্রাইকার</h4>
+                <h4>
+                    <span class="stat-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="7" r="4"></circle>
+                            <path d="M4 21a8 8 0 0 1 16 0"></path>
+                        </svg>
+                    </span>
+                    নন-স্ট্রাইকার
+                </h4>
                 <div class="number" id="nonStrikerName">-</div>
                 <div id="nonStrikerStats">০ (০)</div>
             </div>
             <div class="stats-box" id="bowlerBox" onclick="setActive('bowler')">
-                <h4>🎪 বোলার</h4>
+                <h4>
+                    <span class="stat-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="9"></circle>
+                            <path d="M8 3c1.5 2 1.5 16 0 18"></path>
+                            <path d="M16 3c-1.5 2-1.5 16 0 18"></path>
+                        </svg>
+                    </span>
+                    বোলার
+                </h4>
                 <div class="number" id="bowlerName">-</div>
                 <div id="bowlerStats">০-০ (০)</div>
             </div>

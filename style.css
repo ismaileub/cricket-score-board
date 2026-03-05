@@ -25,6 +25,21 @@ body {
     position: relative;
     overflow: hidden;
 }
+
+button:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+input:disabled,
+select:disabled {
+    opacity: 0.75;
+}
+
+#oversSetup {
+    margin-bottom: 10px;
+}
 .score-board{
     display: flex;
     justify-content: center;
@@ -160,8 +175,18 @@ h1 {
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: transform 0.2s, background-color 0.2s, border-color 0.2s;
     border: 2px solid transparent;
+}
+
+.stats-box.selected-striker {
+    background: #e8f4ff;
+    border-color: #3498db;
+}
+
+.stats-box.selected-bowler {
+    background: #fff3e0;
+    border-color: #f39c12;
 }
 
 .stats-box:active {
@@ -173,6 +198,23 @@ h1 {
     margin: 3px 0;
     color: #2c3e50;
     font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.stat-icon {
+    display: inline-flex;
+    width: 16px;
+    height: 16px;
+    color: #2c3e50;
+    flex: none;
+}
+
+.stat-icon svg {
+    width: 16px;
+    height: 16px;
 }
 
 .stats-box .number {

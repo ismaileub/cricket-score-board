@@ -1,11 +1,13 @@
 let currentInnings = 1;
+let matchTotalOvers = null;
+
+const STORAGE_KEY = "mohishmara_scoreboard_v1";
 let match = {
   innings1: {
     runs: 0,
     wickets: 0,
     balls: 0,
     overs: 0,
-    totalOvers: null,
     players: { batsmen: [], bowlers: [] },
     activePlayers: { striker: null, nonStriker: null, bowler: null },
   },
@@ -14,19 +16,17 @@ let match = {
     wickets: 0,
     balls: 0,
     overs: 0,
-    totalOvers: null,
     players: { batsmen: [], bowlers: [] },
     activePlayers: { striker: null, nonStriker: null, bowler: null },
   },
 };
 
 function getTotalOversForCurrentInnings() {
-  return getCurrentInningsData().totalOvers;
+  return matchTotalOvers;
 }
 
 function ensureTotalOversSet() {
-  const current = getCurrentInningsData();
-  const total = current.totalOvers;
+  const total = matchTotalOvers;
   if (!Number.isInteger(total) || total <= 0) {
     alert("প্রথমে মোট ওভার সেট করুন!");
     return null;
@@ -35,13 +35,12 @@ function ensureTotalOversSet() {
 }
 
 function updateOversSetupUI() {
-  const current = getCurrentInningsData();
   const input = document.getElementById("totalOversInput");
   const btn = document.getElementById("setOversBtn");
   if (!input || !btn) return;
 
-  if (Number.isInteger(current.totalOvers) && current.totalOvers > 0) {
-    input.value = current.totalOvers;
+  if (Number.isInteger(matchTotalOvers) && matchTotalOvers > 0) {
+    input.value = matchTotalOvers;
     input.disabled = true;
     btn.disabled = true;
     btn.textContent = "সেট হয়েছে";
@@ -54,9 +53,8 @@ function updateOversSetupUI() {
 }
 
 function setTotalOvers() {
-  const current = getCurrentInningsData();
-  if (Number.isInteger(current.totalOvers) && current.totalOvers > 0) {
-    alert("এই ইনিংসের মোট ওভার আগেই সেট করা হয়েছে!");
+  if (Number.isInteger(matchTotalOvers) && matchTotalOvers > 0) {
+    alert("ম্যাচের মোট ওভার আগেই সেট করা হয়েছে!");
     return;
   }
 
@@ -68,9 +66,82 @@ function setTotalOvers() {
     return;
   }
 
-  current.totalOvers = value;
+  matchTotalOvers = value;
   updateOversSetupUI();
   updateDisplay();
+}
+
+function buildSerializableInnings(innings) {
+  return {
+    runs: innings.runs,
+    wickets: innings.wickets,
+    balls: innings.balls,
+    overs: innings.overs,
+    players: innings.players,
+    activePlayerIds: {
+      striker: innings.activePlayers.striker?.id ?? null,
+      nonStriker: innings.activePlayers.nonStriker?.id ?? null,
+      bowler: innings.activePlayers.bowler?.id ?? null,
+    },
+  };
+}
+
+function hydrateInnings(serialized) {
+  const players = serialized?.players || { batsmen: [], bowlers: [] };
+  const strikerId = serialized?.activePlayerIds?.striker ?? null;
+  const nonStrikerId = serialized?.activePlayerIds?.nonStriker ?? null;
+  const bowlerId = serialized?.activePlayerIds?.bowler ?? null;
+
+  const striker = players.batsmen.find((p) => p.id === strikerId) || null;
+  const nonStriker = players.batsmen.find((p) => p.id === nonStrikerId) || null;
+  const bowler = players.bowlers.find((p) => p.id === bowlerId) || null;
+
+  return {
+    runs: Number(serialized?.runs) || 0,
+    wickets: Number(serialized?.wickets) || 0,
+    balls: Number(serialized?.balls) || 0,
+    overs: Number(serialized?.overs) || 0,
+    players,
+    activePlayers: { striker, nonStriker, bowler },
+  };
+}
+
+function persistState() {
+  try {
+    const payload = {
+      currentInnings,
+      matchTotalOvers,
+      match: {
+        innings1: buildSerializableInnings(match.innings1),
+        innings2: buildSerializableInnings(match.innings2),
+      },
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+  } catch {
+    // ignore storage errors
+  }
+}
+
+function restoreState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+
+    matchTotalOvers =
+      Number.isInteger(parsed?.matchTotalOvers) && parsed.matchTotalOvers > 0
+        ? parsed.matchTotalOvers
+        : null;
+
+    const innings1 = hydrateInnings(parsed?.match?.innings1);
+    const innings2 = hydrateInnings(parsed?.match?.innings2);
+    match = { innings1, innings2 };
+
+    const restoredInnings = Number(parsed?.currentInnings) === 2 ? 2 : 1;
+    currentInnings = restoredInnings;
+  } catch {
+    // ignore storage errors
+  }
 }
 
 function getCurrentInningsData() {
@@ -221,14 +292,16 @@ function updateActiveDisplay() {
   document.getElementById("bowlerName").innerHTML =
     current.activePlayers.bowler?.name || "-";
 
-  if (current.activePlayers.striker) {
-    document.getElementById("strikerStats").innerHTML =
-      `${current.activePlayers.striker.runs} (${current.activePlayers.striker.balls})`;
-  }
-  if (current.activePlayers.nonStriker) {
-    document.getElementById("nonStrikerStats").innerHTML =
-      `${current.activePlayers.nonStriker.runs} (${current.activePlayers.nonStriker.balls})`;
-  }
+  document.getElementById("strikerStats").innerHTML = current.activePlayers
+    .striker
+    ? `${current.activePlayers.striker.runs} (${current.activePlayers.striker.balls})`
+    : "০ (০)";
+
+  document.getElementById("nonStrikerStats").innerHTML = current.activePlayers
+    .nonStriker
+    ? `${current.activePlayers.nonStriker.runs} (${current.activePlayers.nonStriker.balls})`
+    : "০ (০)";
+
   if (current.activePlayers.bowler) {
     let overs =
       Math.floor(current.activePlayers.bowler.balls / 6) +
@@ -236,6 +309,23 @@ function updateActiveDisplay() {
       (current.activePlayers.bowler.balls % 6);
     document.getElementById("bowlerStats").innerHTML =
       `${current.activePlayers.bowler.runs}-${current.activePlayers.bowler.wickets} (${overs})`;
+  } else {
+    document.getElementById("bowlerStats").innerHTML = "০-০ (০)";
+  }
+
+  const strikerBox = document.getElementById("strikerBox");
+  const bowlerBox = document.getElementById("bowlerBox");
+  if (strikerBox) {
+    strikerBox.classList.toggle(
+      "selected-striker",
+      !!current.activePlayers.striker,
+    );
+  }
+  if (bowlerBox) {
+    bowlerBox.classList.toggle(
+      "selected-bowler",
+      !!current.activePlayers.bowler,
+    );
   }
 }
 
@@ -452,6 +542,7 @@ function updateDisplay() {
     `${match.innings2.runs}/${match.innings2.wickets}`;
 
   updateOversSetupUI();
+  persistState();
 }
 
 function resetOver() {
@@ -517,27 +608,38 @@ function startNextInnings() {
 }
 
 function resetMatch() {
+  const ok = confirm(
+    "নতুন ম্যাচ শুরু করবেন?\n\nএতে বর্তমান ম্যাচের সব ডাটা মুছে যাবে।",
+  );
+  if (!ok) return;
+
   match = {
     innings1: {
       runs: 0,
       wickets: 0,
       balls: 0,
       overs: 0,
-      totalOvers: null,
       players: { batsmen: [], bowlers: [] },
-      activePlayers: {},
+      activePlayers: { striker: null, nonStriker: null, bowler: null },
     },
     innings2: {
       runs: 0,
       wickets: 0,
       balls: 0,
       overs: 0,
-      totalOvers: null,
       players: { batsmen: [], bowlers: [] },
-      activePlayers: {},
+      activePlayers: { striker: null, nonStriker: null, bowler: null },
     },
   };
+  matchTotalOvers = null;
   currentInnings = 1;
+
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch {
+    // ignore
+  }
+
   document.getElementById("innings1Btn").classList.add("active");
   document.getElementById("innings2Btn").classList.remove("active");
   updateDisplay();
@@ -551,7 +653,15 @@ function togglePlayers() {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
+  restoreState();
   updateDisplay();
   updatePlayerDisplay();
   updateOversSetupUI();
+
+  document
+    .getElementById("innings1Btn")
+    ?.classList.toggle("active", currentInnings === 1);
+  document
+    .getElementById("innings2Btn")
+    ?.classList.toggle("active", currentInnings === 2);
 });

@@ -25,6 +25,13 @@ body {
     position: relative;
     overflow: hidden;
 }
+.score-board{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+    margin-top: 5px;
+}
 
 h1 {
     text-align: center;

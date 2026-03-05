@@ -5,6 +5,7 @@ let match = {
     wickets: 0,
     balls: 0,
     overs: 0,
+    totalOvers: null,
     players: { batsmen: [], bowlers: [] },
     activePlayers: { striker: null, nonStriker: null, bowler: null },
   },
@@ -13,11 +14,64 @@ let match = {
     wickets: 0,
     balls: 0,
     overs: 0,
+    totalOvers: null,
     players: { batsmen: [], bowlers: [] },
     activePlayers: { striker: null, nonStriker: null, bowler: null },
   },
 };
-let totalOvers = 12;
+
+function getTotalOversForCurrentInnings() {
+  return getCurrentInningsData().totalOvers;
+}
+
+function ensureTotalOversSet() {
+  const current = getCurrentInningsData();
+  const total = current.totalOvers;
+  if (!Number.isInteger(total) || total <= 0) {
+    alert("প্রথমে মোট ওভার সেট করুন!");
+    return null;
+  }
+  return total;
+}
+
+function updateOversSetupUI() {
+  const current = getCurrentInningsData();
+  const input = document.getElementById("totalOversInput");
+  const btn = document.getElementById("setOversBtn");
+  if (!input || !btn) return;
+
+  if (Number.isInteger(current.totalOvers) && current.totalOvers > 0) {
+    input.value = current.totalOvers;
+    input.disabled = true;
+    btn.disabled = true;
+    btn.textContent = "সেট হয়েছে";
+  } else {
+    input.value = "";
+    input.disabled = false;
+    btn.disabled = false;
+    btn.textContent = "ওভার সেট";
+  }
+}
+
+function setTotalOvers() {
+  const current = getCurrentInningsData();
+  if (Number.isInteger(current.totalOvers) && current.totalOvers > 0) {
+    alert("এই ইনিংসের মোট ওভার আগেই সেট করা হয়েছে!");
+    return;
+  }
+
+  const input = document.getElementById("totalOversInput");
+  const raw = (input?.value || "").trim();
+  const value = Number.parseInt(raw, 10);
+  if (!Number.isFinite(value) || value <= 0) {
+    alert("সঠিক মোট ওভার দিন!");
+    return;
+  }
+
+  current.totalOvers = value;
+  updateOversSetupUI();
+  updateDisplay();
+}
 
 function getCurrentInningsData() {
   return currentInnings === 1 ? match.innings1 : match.innings2;
@@ -229,8 +283,16 @@ function addRun(run) {
     return;
   }
 
+  const totalOvers = ensureTotalOversSet();
+  if (totalOvers === null) return;
+
   if (current.overs >= totalOvers || current.wickets >= 10) {
     alert("ইনিংস শেষ!");
+    return;
+  }
+
+  if (current.balls >= 6) {
+    alert("এই ওভারের ৬ বল শেষ। 'ওভার শেষ' চাপুন!");
     return;
   }
 
@@ -249,12 +311,6 @@ function addRun(run) {
 
   if (run % 2 === 1) swapStrike();
 
-  if (current.balls === 6) {
-    current.overs++;
-    current.balls = 0;
-    swapStrike();
-  }
-
   updateDisplay();
   updatePlayerDisplay();
 }
@@ -267,8 +323,16 @@ function addDotBall() {
     return;
   }
 
+  const totalOvers = ensureTotalOversSet();
+  if (totalOvers === null) return;
+
   if (current.overs >= totalOvers || current.wickets >= 10) {
     alert("ইনিংস শেষ!");
+    return;
+  }
+
+  if (current.balls >= 6) {
+    alert("এই ওভারের ৬ বল শেষ। 'ওভার শেষ' চাপুন!");
     return;
   }
 
@@ -276,12 +340,6 @@ function addDotBall() {
   current.activePlayers.bowler.balls++;
 
   current.balls++;
-
-  if (current.balls === 6) {
-    current.overs++;
-    current.balls = 0;
-    swapStrike();
-  }
 
   updateDisplay();
   updatePlayerDisplay();
@@ -295,8 +353,16 @@ function addWicket() {
     return;
   }
 
+  const totalOvers = ensureTotalOversSet();
+  if (totalOvers === null) return;
+
   if (current.overs >= totalOvers || current.wickets >= 10) {
     alert("ইনিংস শেষ!");
+    return;
+  }
+
+  if (current.balls >= 6) {
+    alert("এই ওভারের ৬ বল শেষ। 'ওভার শেষ' চাপুন!");
     return;
   }
 
@@ -308,12 +374,6 @@ function addWicket() {
 
   current.activePlayers.striker = null;
 
-  if (current.balls === 6) {
-    current.overs++;
-    current.balls = 0;
-    swapStrike();
-  }
-
   updateDisplay();
   updatePlayerDisplay();
 }
@@ -324,7 +384,13 @@ function addWide() {
     alert("বোলার সিলেক্ট করুন!");
     return;
   }
+  const totalOvers = ensureTotalOversSet();
+  if (totalOvers === null) return;
   if (current.overs >= totalOvers || current.wickets >= 10) return;
+  if (current.balls >= 6) {
+    alert("এই ওভারের ৬ বল শেষ। 'ওভার শেষ' চাপুন!");
+    return;
+  }
 
   current.runs++;
   current.activePlayers.bowler.runs++;
@@ -338,7 +404,13 @@ function addNoBall() {
     alert("বোলার সিলেক্ট করুন!");
     return;
   }
+  const totalOvers = ensureTotalOversSet();
+  if (totalOvers === null) return;
   if (current.overs >= totalOvers || current.wickets >= 10) return;
+  if (current.balls >= 6) {
+    alert("এই ওভারের ৬ বল শেষ। 'ওভার শেষ' চাপুন!");
+    return;
+  }
 
   current.runs++;
   current.activePlayers.bowler.runs++;
@@ -364,18 +436,30 @@ function updateDisplay() {
   document.getElementById("currentTeamName").innerHTML =
     `${currentInnings === 1 ? "১ম" : "২য়"} ইনিংস`;
 
-  let left = totalOvers - current.overs;
-  document.getElementById("ballCount").innerHTML =
-    `বল: ${current.balls}/৬ | বাকি: ${left} ওভার`;
+  const totalOvers = getTotalOversForCurrentInnings();
+  if (Number.isInteger(totalOvers) && totalOvers > 0) {
+    let left = Math.max(totalOvers - current.overs, 0);
+    document.getElementById("ballCount").innerHTML =
+      `বল: ${current.balls}/৬ | বাকি: ${left} ওভার`;
+  } else {
+    document.getElementById("ballCount").innerHTML =
+      `বল: ${current.balls}/৬ | মোট ওভার সেট করুন`;
+  }
 
   document.getElementById("firstInningsScore").innerHTML =
     `${match.innings1.runs}/${match.innings1.wickets}`;
   document.getElementById("secondInningsScore").innerHTML =
     `${match.innings2.runs}/${match.innings2.wickets}`;
+
+  updateOversSetupUI();
 }
 
 function resetOver() {
   let current = getCurrentInningsData();
+  const totalOvers = ensureTotalOversSet();
+  if (totalOvers === null) return;
+  if (current.overs >= totalOvers) return;
+
   if (current.balls > 0) {
     current.overs++;
     current.balls = 0;
@@ -394,6 +478,7 @@ function switchInnings(innings) {
     .classList.toggle("active", innings === 2);
   updateDisplay();
   updatePlayerDisplay();
+  updateOversSetupUI();
 }
 
 function startNextInnings() {
@@ -427,6 +512,7 @@ function startNextInnings() {
 
     updateDisplay();
     updatePlayerDisplay();
+    updateOversSetupUI();
   }
 }
 
@@ -437,6 +523,7 @@ function resetMatch() {
       wickets: 0,
       balls: 0,
       overs: 0,
+      totalOvers: null,
       players: { batsmen: [], bowlers: [] },
       activePlayers: {},
     },
@@ -445,6 +532,7 @@ function resetMatch() {
       wickets: 0,
       balls: 0,
       overs: 0,
+      totalOvers: null,
       players: { batsmen: [], bowlers: [] },
       activePlayers: {},
     },
@@ -454,9 +542,16 @@ function resetMatch() {
   document.getElementById("innings2Btn").classList.remove("active");
   updateDisplay();
   updatePlayerDisplay();
+  updateOversSetupUI();
 }
 
 function togglePlayers() {
   document.getElementById("playersContent").classList.toggle("show");
   document.getElementById("playerArrow").classList.toggle("rotate");
 }
+
+window.addEventListener("DOMContentLoaded", () => {
+  updateDisplay();
+  updatePlayerDisplay();
+  updateOversSetupUI();
+});

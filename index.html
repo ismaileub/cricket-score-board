@@ -10,6 +10,11 @@
     <div class="scoreboard" id="scoreboard">
         <h1>🏏 MOHISHMARA FC</h1>
         <div class="match-info">২ ইনিংস ক্রিকেট</div>
+
+        <div class="player-input" id="oversSetup">
+            <input type="number" id="totalOversInput" placeholder="মোট ওভার (এই ইনিংস)" min="1" step="1">
+            <button id="setOversBtn" onclick="setTotalOvers()">ওভার সেট</button>
+        </div>
         
         <div class="innings-toggle">
             <button class="innings-btn active" id="innings1Btn" onclick="switchInnings(1)">১ম ইনিংস</button>
@@ -29,8 +34,10 @@
         
         <div class="team-section">
             <div class="team-name" id="currentTeamName">১ম ইনিংস</div>
-            <div class="score" id="bdScore">0/0</div>
+            <div class="score-board">
+                <div class="score" id="bdScore">0/0</div>
             <div class="overs" id="bdOvers">০.০ ওভার</div>
+            </div>
         </div>
         
         <div class="ball-status" id="ballCount">
